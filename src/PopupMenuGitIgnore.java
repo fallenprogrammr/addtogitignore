@@ -1,6 +1,8 @@
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -23,11 +25,14 @@ public class PopupMenuGitIgnore extends AnAction {
     }
 
     private void createGitIgnoreFile(Project project) {
-        try {
-            project.getBaseDir().createChildData(this, ".gitignore");
-        } catch (IOException ioex) {
-            Messages.showErrorDialog(ioex.getMessage(), "Could not create .gitignore file");
-        }
+        Application application = ApplicationManager.getApplication();
+        application.runWriteAction(() -> {
+            try {
+                project.getBaseDir().createChildData(this, ".gitignore");
+            } catch (IOException ioex) {
+                Messages.showErrorDialog(ioex.getMessage(), "Could not create .gitignore file");
+            }
+        });
     }
 
     private void writeHighlightedItemToGitIgnore(String gitIgnorePath, VirtualFile highlightedItem) {
