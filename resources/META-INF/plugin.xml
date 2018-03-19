@@ -1,17 +1,15 @@
 <idea-plugin>
-    <id>com.your.company.unique.plugin.id</id>
-    <name>Plugin display name here</name>
-    <version>1.0</version>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <id>com.euphoricity.gitignore</id>
+    <name>Add to gitignore</name>
+    <version>0.1</version>
+    <vendor email="amit.patankar@gmail.com" url="">euphoricity</vendor>
 
     <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+      Add a file or directory to gitignore in IntelliJ by right clicking it in project view.
     ]]></description>
 
     <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
+      It's alive!!!
     ]]>
     </change-notes>
 

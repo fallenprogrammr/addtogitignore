@@ -1,10 +1,13 @@
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vfs.VirtualFile;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class PopupMenuGitIgnore extends AnAction {
@@ -12,29 +15,50 @@ public class PopupMenuGitIgnore extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getProject();
         String gitIgnorePath = project.getBasePath() + File.separator + ".gitignore";
-        if(new File(gitIgnorePath).exists()){
-            //Messages.showMessageDialog(project, "Hello", gitIgnorePath + " exists!", Messages.getInformationIcon());
+        final VirtualFile highlightedItem = CommonDataKeys.VIRTUAL_FILE.getData(e.getDataContext());
+        if (!new File(gitIgnorePath).exists()) {
+            createGitIgnoreFile(project);
         }
-        else{
-            try {
-                project.getBaseDir().createChildData(this,".gitignore");
-            } catch (IOException ioex) {
-                Messages.showErrorDialog(ioex.getMessage(),"Could not create .gitignore file");
+        writeHighlightedItemToGitIgnore(gitIgnorePath, highlightedItem);
+    }
+
+    private void createGitIgnoreFile(Project project) {
+        try {
+            project.getBaseDir().createChildData(this, ".gitignore");
+        } catch (IOException ioex) {
+            Messages.showErrorDialog(ioex.getMessage(), "Could not create .gitignore file");
+        }
+    }
+
+    private void writeHighlightedItemToGitIgnore(String gitIgnorePath, VirtualFile highlightedItem) {
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(gitIgnorePath, true));
+            String gitignoreEntry = getGitignoreEntry(highlightedItem);
+            writer.write(gitignoreEntry);
+        } catch (IOException e1) {
+            Messages.showErrorDialog(e1.getMessage(), "Could not write to gitignore");
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (Exception ex) {
+                }
             }
         }
+    }
+
+    private String getGitignoreEntry(VirtualFile highlightedItem) {
+        return ((highlightedItem.isDirectory()) ? highlightedItem.getPresentableName() + File.separator : highlightedItem.getPresentableName()) + System.lineSeparator();
     }
 
     @Override
     public void update(AnActionEvent e) {
         final VirtualFile highlightedItem = CommonDataKeys.VIRTUAL_FILE.getData(e.getDataContext());
-        if (highlightedItem.isDirectory()) {
-            e.getPresentation().setText("Add " + highlightedItem.getName() +" to gitignore");
+        if (highlightedItem.getName().equals(".gitignore")) {
+            e.getPresentation().setEnabled(false);
         } else {
-            if(highlightedItem.getName().equals(".gitignore")){
-                e.getPresentation().setEnabled(false);
-            }else {
-                e.getPresentation().setText("Add" + highlightedItem.getName() + " to gitignore");
-            }
+            e.getPresentation().setText("Add " + highlightedItem.getName() + " to gitignore");
         }
     }
 
