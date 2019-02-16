@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.euphoricity.gitignore</id>
     <name>Add to gitignore</name>
-    <version>0.1</version>
+    <version>0.2</version>
     <vendor email="amit.patankar@gmail.com" url="">euphoricity</vendor>
 
     <description><![CDATA[
@@ -9,7 +9,8 @@
     ]]></description>
 
     <change-notes><![CDATA[
-      Updated version number to support from IntelliJ v15
+      v0.1 - Updated version number to support from IntelliJ v15
+      v0.2 - Fixed issue that caused an exception during IntelliJ 2018.3.4 startup
     ]]>
     </change-notes>
 
@@ -28,10 +29,9 @@
 
     <actions>
         <!-- Add your actions here -->
-        <group id="com.euphoricity.addtogitignore">
+        <group id="AddToGitIgnore">
             <action class="PopupMenuGitIgnore" id="com.euphoricity.addtogitignore"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="AnalyzeMenu"/>
         </group>
     </actions>
-
 </idea-plugin>
