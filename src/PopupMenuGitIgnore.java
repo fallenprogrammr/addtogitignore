@@ -13,10 +13,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class PopupMenuGitIgnore extends AnAction {
+
+    private static final String GITIGNORE = ".gitignore";
+
     @Override
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getProject();
-        String gitIgnorePath = project.getBasePath() + File.separator + ".gitignore";
+        String gitIgnorePath = project.getBasePath() + File.separator + GITIGNORE;
         final VirtualFile highlightedItem = CommonDataKeys.VIRTUAL_FILE.getData(e.getDataContext());
         if (!new File(gitIgnorePath).exists()) {
             createGitIgnoreFile(project);
@@ -28,7 +31,7 @@ public class PopupMenuGitIgnore extends AnAction {
         Application application = ApplicationManager.getApplication();
         application.runWriteAction(() -> {
             try {
-                project.getBaseDir().createChildData(this, ".gitignore");
+                project.getBaseDir().createChildData(this, GITIGNORE);
             } catch (IOException ioex) {
                 Messages.showErrorDialog(ioex.getMessage(), "Could not create .gitignore file");
             }
@@ -60,11 +63,16 @@ public class PopupMenuGitIgnore extends AnAction {
     @Override
     public void update(AnActionEvent e) {
         final VirtualFile highlightedItem = CommonDataKeys.VIRTUAL_FILE.getData(e.getDataContext());
-        if (highlightedItem.getName().equals(".gitignore")) {
+        if (isNotALocalFile(highlightedItem) || highlightedItem.getName().equals(GITIGNORE)) {
             e.getPresentation().setEnabled(false);
         } else {
             e.getPresentation().setText("Add " + highlightedItem.getName() + " to gitignore");
         }
+    }
+
+    private boolean isNotALocalFile(final VirtualFile highlightedItem) {
+        // highlightedItem is null for 'External libraries'
+        return highlightedItem == null || !highlightedItem.isInLocalFileSystem();
     }
 
 }
