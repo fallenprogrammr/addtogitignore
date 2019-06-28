@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.euphoricity.gitignore</id>
     <name>Add to gitignore</name>
-    <version>0.2</version>
+    <version>0.3</version>
     <vendor email="amit.patankar@gmail.com" url="">euphoricity</vendor>
 
     <description><![CDATA[
@@ -11,6 +11,7 @@
     <change-notes><![CDATA[
       v0.1 - Updated version number to support from IntelliJ v15
       v0.2 - Fixed issue that caused an exception during IntelliJ 2018.3.4 startup
+      v0.3 - Fixed null pointer exception when external library is highlighted - thanks Jarek Strzelecki!
     ]]>
     </change-notes>
 
