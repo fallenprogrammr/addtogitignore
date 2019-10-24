@@ -1,12 +1,13 @@
-import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.LocalFileSystem;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Objects;
 
 public class GitIgnore {
@@ -28,8 +29,7 @@ public class GitIgnore {
     }
 
     void create() {
-        Application application = ApplicationManager.getApplication();
-        application.runWriteAction(() -> {
+        ApplicationManager.getApplication().runWriteAction(() -> {
             try {
                 project.getBaseDir().createChildData(this, FILENAME);
             } catch (IOException ioex) {
@@ -38,20 +38,24 @@ public class GitIgnore {
         });
     }
 
-    void addEntry(final String gitignoreEntry) {
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new FileWriter(getGitIgnorePath(), true));
-            writer.write(gitignoreEntry);
-        } catch (IOException e1) {
-            Messages.showErrorDialog(e1.getMessage(), "Could not write to gitignore");
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (Exception ex) {
+    void addEntry(final String gitIgnoreEntry) {
+        ApplicationManager.getApplication().runWriteAction(() -> {
+            final File gitIgnoreFile = new File(getGitIgnorePath());
+            BufferedWriter writer = null;
+            try {
+                writer = new BufferedWriter(new FileWriter(gitIgnoreFile, true));
+                writer.write(gitIgnoreEntry);
+            } catch (IOException e1) {
+                Messages.showErrorDialog(e1.getMessage(), "Could not write to gitignore");
+            } finally {
+                if (writer != null) {
+                    try {
+                        writer.close();
+                    } catch (Exception ex) {
+                    }
                 }
             }
-        }
+            LocalFileSystem.getInstance().refreshIoFiles(Collections.singleton(gitIgnoreFile));
+        });
     }
 }
